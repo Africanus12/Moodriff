@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Riff Maker</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                <h1>Mood Riff Maker</h1>
+            </div>
+            <div class="header-controls">
+                <button id="back-button" class="icon-button" style="display: none;">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Home Screen -->
+            <section id="home-screen" class="screen active">
+                <div class="mood-container">
+                    <div class="streak-container">
+                        <span class="streak-fire">🔥</span>
+                        <span id="streak-count">0 Days Streak</span>
+                    </div>
+                    
+                    <h2>How are you feeling today?</h2>
+                    <div class="mood-buttons">
+                        <button class="mood-button" data-mood="CHILL">
+                            <i class="bi bi-cloud"></i>
+                            <span>Chill</span>
+                        </button>
+                        <button class="mood-button" data-mood="HYPE">
+                            <i class="bi bi-lightning"></i>
+                            <span>Hype</span>
+                        </button>
+                        <button class="mood-button" data-mood="CALM">
+                            <i class="bi bi-water"></i>
+                            <span>Calm</span>
+                        </button>
+                        <button class="mood-button" data-mood="WILD">
+                            <i class="bi bi-stars"></i>
+                            <span>Wild</span>
+                        </button>
+                    </div>
+                    
+                    <button id="make-riff-button" class="primary-button" disabled>
+                        Make Riff
+                    </button>
+                    
+                    <div class="home-bottom-buttons">
+                        <button id="daily-challenge-button" class="secondary-button">
+                            <i class="bi bi-calendar-check"></i>
+                            Daily Challenge
+                        </button>
+                        <button id="level-progress-button" class="secondary-button">
+                            <i class="bi bi-trophy"></i>
+                            <span id="level-display">Level 1</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Riff Screen -->
+            <section id="riff-screen" class="screen">
+                <div class="riff-container">
+                    <div class="mood-display">
+                        <span id="selected-mood-name">Mood</span>
+                        <span>Riff</span>
+                    </div>
+                    
+                    <div class="visualizer-container">
+                        <canvas id="visualizer"></canvas>
+                    </div>
+                    
+                    <div class="riff-controls">
+                        <button id="play-pause-button" class="control-button">
+                            <i class="bi bi-play-fill"></i>
+                        </button>
+                        <button id="save-button" class="control-button">
+                            <i class="bi bi-save"></i>
+                        </button>
+                        <button id="share-button" class="control-button">
+                            <i class="bi bi-share"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="effects-panel">
+                        <h3>Effects</h3>
+                        <div class="effects-controls">
+                            <div class="effect-control">
+                                <label for="reverb-control">Reverb</label>
+                                <input type="range" id="reverb-control" min="0" max="1" step="0.1" value="0">
+                            </div>
+                            <div class="effect-control">
+                                <label for="echo-control">Echo</label>
+                                <input type="range" id="echo-control" min="0" max="1" step="0.1" value="0">
+                            </div>
+                            <div class="effect-control">
+                                <label for="phaser-control">Phaser</label>
+                                <input type="range" id="phaser-control" min="0" max="1" step="0.1" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Library Screen -->
+            <section id="library-screen" class="screen">
+                <div class="library-container">
+                    <h2>Your Riff Library</h2>
+                    <div id="library-empty-state" class="empty-state">
+                        <i class="bi bi-music-note-list"></i>
+                        <p>Your saved riffs will appear here</p>
+                    </div>
+                    <ul id="riff-list" class="riff-list"></ul>
+                </div>
+            </section>
+
+            <!-- Level System Screen -->
+            <section id="level-screen" class="screen">
+                <div class="level-container">
+                    <div class="user-level-info">
+                        <h2>Level <span id="user-level">1</span></h2>
+                        <div class="xp-progress-container">
+                            <div class="xp-progress-bar">
+                                <div id="xp-progress-fill"></div>
+                            </div>
+                            <div class="xp-labels">
+                                <span id="current-xp">0 XP</span>
+                                <span id="next-level-xp">100 XP</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rewards-section">
+                        <h3>Level Rewards</h3>
+                        <ul id="rewards-list" class="rewards-list">
+                            <li class="reward-item">
+                                <div class="reward-level">Level 2</div>
+                                <div class="reward-info">
+                                    <i class="bi bi-stars"></i>
+                                    <span>Wild Mood Unlocked</span>
+                                </div>
+                            </li>
+                            <li class="reward-item">
+                                <div class="reward-level">Level 3</div>
+                                <div class="reward-info">
+                                    <i class="bi bi-palette"></i>
+                                    <span>Wave Visualizer Unlocked</span>
+                                </div>
+                            </li>
+                            <li class="reward-item">
+                                <div class="reward-level">Level 5</div>
+                                <div class="reward-info">
+                                    <i class="bi bi-badge-3d"></i>
+                                    <span>Mood Mixer Unlocked</span>
+                                </div>
+                            </li>
+                            <li class="reward-item">
+                                <div class="reward-level">Level 7</div>
+                                <div class="reward-info">
+                                    <i class="bi bi-sliders"></i>
+                                    <span>Echo Effect Unlocked</span>
+                                </div>
+                            </li>
+                            <li class="reward-item">
+                                <div class="reward-level">Level 10</div>
+                                <div class="reward-info">
+                                    <i class="bi bi-trophy-fill"></i>
+                                    <span>Master Riff Maker Badge</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Daily Challenge Screen -->
+            <section id="challenge-screen" class="screen">
+                <div class="challenge-container">
+                    <h2>Daily Challenge</h2>
+                    <div class="challenge-card">
+                        <div class="challenge-header">
+                            <i class="bi bi-calendar-check"></i>
+                            <h3>Today's Challenge</h3>
+                        </div>
+                        <div class="challenge-content">
+                            <p id="challenge-description">Create a Wild Riff today!</p>
+                            <div class="challenge-reward">
+                                <span>Reward:</span>
+                                <span id="challenge-reward">+50 XP</span>
+                            </div>
+                        </div>
+                        <div class="challenge-status">
+                            <span id="challenge-status-text">Not Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mood Diary Screen -->
+            <section id="diary-screen" class="screen">
+                <div class="diary-container">
+                    <h2>Your Mood Diary</h2>
+                    <div class="chart-container">
+                        <canvas id="mood-chart"></canvas>
+                    </div>
+                    <div class="diary-info">
+                        <p>Track your mood trends over time</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-screen="home-screen">
+                <i class="bi bi-house"></i>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-screen="library-screen">
+                <i class="bi bi-music-note-list"></i>
+                <span>Library</span>
+            </button>
+            <button class="nav-item" data-screen="diary-screen">
+                <i class="bi bi-journal"></i>
+                <span>Diary</span>
+            </button>
+            <button class="nav-item" data-screen="level-screen">
+                <i class="bi bi-trophy"></i>
+                <span>Level</span>
+            </button>
+        </nav>
+
+        <!-- Level Up Modal -->
+        <div id="level-up-modal" class="modal">
+            <div class="modal-content">
+                <div id="level-up-animation" class="level-up-animation"></div>
+                <h2>Level Up!</h2>
+                <p>Congratulations! You've reached <span id="new-level">Level 2</span></p>
+                <div id="level-reward" class="level-reward">
+                    <i class="bi bi-unlock"></i>
+                    <span>New feature unlocked!</span>
+                </div>
+                <button id="close-level-modal" class="primary-button">Continue</button>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="notification-toast" class="notification-toast">
+            <span id="notification-message"></span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/models.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/toneHelper.js"></script>
+    <script src="js/visualizer.js"></script>
+    <script src="js/userProgress.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

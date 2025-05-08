@@ -1,0 +1,80 @@
+app/
+├── java/com/example/moodriffmaker/
+│   ├── MainActivity.kt             # Single Activity hosting Fragments
+│   ├── MoodRiffMakerApp.kt      # Application class for Hilt setup
+│   ├── data/
+│   │   ├── local/
+│   │   │   ├── AppDatabase.kt        # Room Database definition
+│   │   │   ├── dao/
+│   │   │   │   └── RiffDao.kt        # Data Access Object for Riffs
+│   │   │   ├── entity/
+│   │   │   │   └── RiffEntity.kt     # Room Entity for saved Riffs
+│   │   │   └── SharedPreferencesHelper.kt # Helper for SharedPreferences
+│   │   ├── model/
+│   │   │   └── Mood.kt             # Enum or Sealed Class for Moods
+│   │   │   └── Riff.kt             # Domain model (optional, if different from Entity)
+│   │   │   └── UserProgress.kt     # Data class for XP, Level, Streak
+│   │   │   └── Challenge.kt        # Data class for Daily Challenges
+│   │   └── repository/
+│   │       ├── RiffRepository.kt     # Handles Riff data operations
+│   │       └── UserRepository.kt     # Handles User progress/settings
+│   │       └── ChallengeRepository.kt # Handles challenge logic
+│   ├── di/                         # Dependency Injection Modules (Hilt)
+│   │   └── AppModule.kt
+│   │   └── DatabaseModule.kt
+│   ├── service/                    # Optional: For background tasks
+│   │   └── RiffGenerationService.kt # If generation is complex/long
+│   ├── ui/
+│   │   ├── base/                   # Base classes (optional)
+│   │   │   └── BaseFragment.kt
+│   │   ├── home/
+│   │   │   ├── HomeFragment.kt
+│   │   │   └── HomeViewModel.kt
+│   │   ├── riff/
+│   │   │   ├── RiffFragment.kt
+│   │   │   ├── RiffViewModel.kt
+│   │   │   └── AudioVisualizerView.kt # Custom View for visualization
+│   │   ├── library/
+│   │   │   ├── LibraryFragment.kt
+│   │   │   ├── LibraryViewModel.kt
+│   │   │   └── LibraryAdapter.kt   # RecyclerView Adapter
+│   │   ├── levels/
+│   │   │   ├── LevelFragment.kt
+│   │   │   └── LevelViewModel.kt
+│   │   │   └── RewardAdapter.kt    # RecyclerView Adapter for rewards
+│   │   ├── challenge/              # Optional Screen
+│   │   │   ├── ChallengeFragment.kt
+│   │   │   └── ChallengeViewModel.kt
+│   │   ├── diary/                  # Optional Screen
+│   │   │   ├── MoodDiaryFragment.kt
+│   │   │   └── MoodDiaryViewModel.kt
+│   │   └── settings/               # Optional Screen for themes etc.
+│   │       ├── SettingsFragment.kt
+│   │       └── SettingsViewModel.kt
+│   ├── util/                       # Utility classes and extensions
+│   │   ├── Constants.kt
+│   │   ├── ToneHelper.kt           # Logic for using ToneGenerator
+│   │   ├── AudioPlayerHelper.kt    # Wrapper for ExoPlayer/MediaPlayer
+│   │   └── Extensions.kt
+│   └── view/                       # Custom Views (like AudioVisualizerView)
+│
+├── res/
+│   ├── layout/                     # XML layouts for Fragments/Activities/List items
+│   │   ├── activity_main.xml
+│   │   ├── fragment_home.xml
+│   │   ├── fragment_riff.xml
+│   │   ├── fragment_library.xml
+│   │   ├── fragment_level.xml
+│   │   ├── item_riff.xml           # Layout for RecyclerView in Library
+│   │   └── item_reward.xml         # Layout for RecyclerView in Levels
+│   ├── navigation/                 # Navigation Graph
+│   │   └── nav_graph.xml
+│   ├── drawable/                   # Icons (Chill, Hype, Calm, Wild, Play, Pause, Save, Share, Delete, Streak Fire)
+│   ├── values/
+│   │   ├── strings.xml
+│   │   ├── colors.xml              # Material 3 color palettes
+│   │   ├── themes.xml              # Material 3 themes (Theme.Material3...)
+│   │   └── dimens.xml
+│   ├── raw/                        # Optional: Default sound assets if needed
+│   └── menu/                       # Optional: For options menus
+└── AndroidManifest.xml             # App manifest
